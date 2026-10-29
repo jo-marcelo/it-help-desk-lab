@@ -2,7 +2,9 @@
 
 I built a Microsoft Entra ID tenant on my own domain and worked the tickets a Tier 1 help desk handles every week. That covers password resets, MFA setup, a lost phone, self-service password reset, and least-privilege admin roles. Every step has a screenshot.
 
-The tenant runs on Entra ID Free with no Azure subscription attached, so nothing in it can generate a bill.
+Then I set up GLPI, an open-source ticketing system, in Docker and logged eight help desk scenarios as real tickets, with categories, SLAs, time tracking, and escalations to other teams. Five of those tickets map to admin work I did in the Entra tenant.
+
+The tenant runs on Entra ID Free with no Azure subscription attached, so nothing in it can generate a bill. GLPI runs locally on my PC.
 
 ## What this lab shows
 
@@ -14,38 +16,43 @@ The tenant runs on Entra ID Free with no Azure subscription attached, so nothing
 - Self-service password reset (SSPR)
 - Role-based access with the Helpdesk Administrator role, and proof of where that role stops
 - Reading Entra licensing limits instead of assuming a feature works
+- Running GLPI in Docker and hardening its default accounts
+- Designing ticket categories, support groups, and P1 to P4 SLAs
+- Business rules that apply the right SLA from the ticket's priority
+- Working tickets end to end: identity verification, time-logged tasks, solutions, and escalation to Security and Network teams
 
 ## Environment
 
-| Item | Value |
-| --- | --- |
-| Tenant | IT Help Desk Lab |
-| Plan | Microsoft Entra ID Free |
-| Custom domain | jomiranda.com (verified, primary) |
-| DNS | Vercel |
-| Daily admin | admin@jomiranda.com (Global Administrator) |
-| MFA enforcement | Security defaults |
+| Item            | Value                                      |
+|-----------------|--------------------------------------------|
+| Tenant          | IT Help Desk Lab                           |
+| Plan            | Microsoft Entra ID Free                    |
+| Custom domain   | jomiranda.com (verified, primary)          |
+| DNS             | Vercel                                     |
+| Daily admin     | admin@jomiranda.com (Global Administrator) |
+| MFA enforcement | Security defaults                          |
+| Ticketing       | GLPI 11 in Docker (MySQL 8.4), localhost only |
 
 ### Lab users
 
-| User | Department | Job title | Role in the lab |
-| --- | --- | --- | --- |
-| alex.tech | IT | Help Desk Technician | Holds Helpdesk Administrator |
-| maria.sales | Sales | Account Executive | Password reset and MFA setup |
-| pedro.sales | Sales | Sales Representative | Lost-phone MFA recovery |
-| ana.finance | Finance | Financial Analyst | Target of Alex's password reset |
-| lucas.newhire | none yet | New Hire | Left without a department or group on purpose, for a later new-hire scenario |
+| User          | Department | Job title            | Role in the lab                                                  |
+|---------------|------------|----------------------|------------------------------------------------------------------|
+| alex.tech     | IT         | Help Desk Technician | Holds Helpdesk Administrator; the technician on every GLPI ticket |
+| maria.sales   | Sales      | Account Executive    | Password reset and MFA setup                                     |
+| pedro.sales   | Sales      | Sales Representative | Lost-phone MFA recovery                                          |
+| ana.finance   | Finance    | Financial Analyst    | Target of Alex's password reset                                  |
+| lucas.newhire | Sales      | New Hire             | Created with no department or group on purpose, fixed in GLPI ticket 3 |
 
 ### Groups
 
-| Group | Type | Membership | Members |
-| --- | --- | --- | --- |
-| SG-Sales | Security | Assigned | Maria, Pedro |
-| SG-IT-Support | Security | Assigned | Alex |
+| Group         | Type     | Membership | Members             |
+|---------------|----------|------------|---------------------|
+| SG-Sales      | Security | Assigned   | Maria, Pedro, Lucas |
+| SG-IT-Support | Security | Assigned   | Alex                |
 
 Both groups are assigned. Dynamic groups need Entra ID P1.
 
-## Walkthrough
+## Part 1: Entra ID walkthrough
 
 ### 1. Tenant and custom domain
 
@@ -121,11 +128,153 @@ Pedro registered Microsoft Authenticator on his phone. Then I played out the com
 ![Pedro's original MFA registration](screenshots/18-pedro-mfa-registered.png)
 ![MFA re-registration required](screenshots/19-require-mfa-reregister.png)
 
+## Part 2: GLPI ticketing
+
+GLPI is an open-source IT service management tool used by a lot of service desks, especially in Brazil and Europe. I ran it in Docker, set it up like a small help desk, and logged eight scenarios as tickets. Each ticket records the call, what I checked, the time spent, and how it ended.
+
+### 1. Docker setup and hardening
+
+The stack is two containers from the official images, `glpi/glpi` and `mysql:8.4`. The compose file is in [`glpi/`](glpi/). Passwords live in a `.env` file that git ignores; the repo only has `.env.example` with placeholders.
+
+```
+cd glpi
+cp .env.example .env    # then set your own passwords
+docker compose up -d
+```
+
+GLPI installs itself on first start and is then reachable at `http://localhost:8080`.
+
+A fresh install ships four accounts with known passwords (`glpi`, `tech`, `normal`, `post-only`). I changed the super-admin password and deactivated the other three. I also turned off GLPI's demonstration data, which fills the dashboard with thousands of fake assets and tickets, so every number in my screenshots is real. One more fix came later: GLPI showed the container's UTC clock, so I set the timezone to America/Sao_Paulo to make ticket times match when the work happened.
+
+![Clean dashboard after hardening](screenshots/glpi-01-dashboard-hardened.png)
+
+### 2. Ticket categories
+
+One category per kind of problem, grouped under four parents. Each of the eight scenarios lands in exactly one.
+
+| Category | Scenarios |
+|---|---|
+| Identity & Access > Password reset | 1, 5 |
+| Identity & Access > MFA | 2 |
+| Identity & Access > Account provisioning | 3 (a request, not an incident) |
+| Identity & Access > Self-service password reset | 4 |
+| Security > Phishing report | 6 |
+| Network > VPN | 7 |
+| Endpoint > Performance | 8 |
+
+![ITIL categories](screenshots/glpi-02-itil-categories.png)
+
+### 3. Groups and users
+
+Three groups. Service Desk L1 takes every incoming ticket. Security and Network exist as escalation targets.
+
+The GLPI users mirror the Entra users, with the same names and emails. Alex has the Technician profile and sits in Service Desk L1. Maria, Pedro, Ana, and Lucas are Self-Service users, which means they can open and follow their own tickets and nothing else.
+
+![Support groups](screenshots/glpi-03-groups.png)
+![GLPI users, default accounts deactivated](screenshots/glpi-04-users.png)
+
+### 4. SLAs and the rules that apply them
+
+| Priority | GLPI priority | Time to own (first response) | Time to resolve |
+|---|---|---|---|
+| P1 | Very high | 15 minutes | 2 hours |
+| P2 | High | 30 minutes | 4 hours |
+| P3 | Medium | 1 hour | 8 hours |
+| P4 | Low | 4 hours | 3 days |
+
+Picking an SLA by hand on every ticket is how tickets end up with no SLA at all. So I wrote four business rules, one per priority, that assign both SLAs when a ticket is created or its priority changes. If a technician bumps a ticket from Medium to High, the deadlines tighten on their own. I checked the SLA panel on the first ticket before logging the rest.
+
+![SLA definitions](screenshots/glpi-05-slas.png)
+![Business rules mapping priority to SLA](screenshots/glpi-06-sla-rules.png)
+
+### 5. The eight tickets
+
+Every ticket follows the same pattern. The user calls, Alex logs the ticket and verifies who is calling, adds a followup with what the user was told, logs a task with the time spent, and either solves the ticket or hands it to another team.
+
+| # | Scenario | Caller | Priority | Outcome |
+|---|---|---|---|---|
+| 1 | Forgot password | Maria | P3 | Admin reset, solved |
+| 2 | MFA lockout after a new phone | Pedro | P2 | MFA re-registration, solved |
+| 3 | New hire can't reach team resources | Lucas | P3 | Department and group fixed in Entra, solved |
+| 4 | "Forgot my password" link refuses her | Ana | P3 | Licensing gap found, admin reset, solved |
+| 5 | Exec locked out before a board call | Maria | P1 | Identity verified despite pressure, solved |
+| 6 | Suspicious email | Ana | P2 | User advised, escalated to Security |
+| 7 | VPN times out from home | Pedro | P2 | L1 checks done, escalated to Network |
+| 8 | Slow laptop | Lucas | P4 | Troubleshot on the call, solved |
+
+Tickets 1 to 5 are backed by real changes in the Entra tenant. This lab has no mail filter, VPN server, or laptop fleet, so tickets 6 to 8 are scenarios: they record the call and the L1 steps as I would work them, and they test the judgment calls (when to fix, when to escalate) rather than a specific admin console.
+
+#### Ticket 1: Forgot password (Maria, P3)
+
+The same reset as step 4 of Part 1, now logged the way a service desk would log it: identity verified by callback, a 10-minute task for the reset, and a solution Maria can read. Resolved in 15 minutes against a 1-hour response and 8-hour resolution target.
+
+![Ticket 1](screenshots/glpi-07-ticket-01-password-reset.png)
+
+#### Ticket 2: MFA lockout, new phone (Pedro, P2)
+
+Pedro's password worked; his authenticator registration was gone with the old phone. The fix is requiring MFA re-registration, as in step 8 of Part 1. The task notes what I didn't do. Disabling MFA or resetting his password would have "fixed" the call and created a security hole.
+
+![Ticket 2](screenshots/glpi-08-ticket-02-mfa-new-phone.png)
+
+#### Ticket 3: New hire can't access team resources (Lucas, P3)
+
+Lucas was created in Part 1 with no department and no group, on purpose. For this ticket I made the real fix in Entra: set his department to Sales and added him to SG-Sales. It's logged as a Request rather than an Incident, since nothing was broken; the onboarding was incomplete.
+
+The plan also had "assign a license" as part of the fix. This tenant has no Microsoft 365 licenses to assign, so I left that out rather than log work that didn't happen.
+
+![SG-Sales with Lucas added](screenshots/22-sg-sales-lucas-added.png)
+![Ticket 3](screenshots/glpi-09-ticket-03-new-hire-access.png)
+
+#### Ticket 4: Self-service reset won't work (Ana, P3)
+
+Ana tried "Forgot my password" and was told she can't reset it herself. That's the licensing limit from the notes below: end-user SSPR needs Entra ID P1. Nothing on her side was wrong. Alex reset her password with the Helpdesk Administrator role, the same reset he did in step 6 of Part 1, and the solution tells Ana resets go through the help desk for now.
+
+![Ticket 4](screenshots/glpi-10-ticket-04-sspr.png)
+
+#### Ticket 5: Exec locked out before a board call (Maria, P1)
+
+The caller said she was Maria, a Sales Director, calling from an unknown number, 20 minutes before a board presentation, and asked to skip verification. Urgency plus authority is the standard social engineering setup. Alex declined and called back the number on file. Maria answered, confirmed, and got her reset with time to spare. The solution notes that an unverifiable caller would have been escalated, not reset.
+
+Urgency Very high and impact High make this the only P1, with a 15-minute response target and a 2-hour resolution target. It was closed well inside both.
+
+![Ticket 5](screenshots/glpi-11-ticket-05-exec-lockout.png)
+
+#### Ticket 6: Suspicious email (Ana, P2)
+
+Ana got a fake Microsoft "verify your account" email and called before clicking anything. Alex told her not to click, reply, or forward it, and to use Report Phishing in Outlook. He collected the sender, subject, and time, confirmed no credentials were entered, and handed the ticket to the Security group. Alex stays on as an observer, and the ticket stays open, because the investigation belongs to Security.
+
+![Ticket 6](screenshots/glpi-12-ticket-06-phishing-escalated.png)
+
+#### Ticket 7: VPN won't connect (Pedro, P2)
+
+The VPN client timed out from home while other sites worked. Alex walked Pedro through a restart and then a phone hotspot. The same timeout on two different networks rules out his home connection, and his credentials and MFA were fine, so the problem is on the server or account side. Escalated to Network with the error text and times.
+
+![Ticket 7](screenshots/glpi-13-ticket-07-vpn-escalated.png)
+
+#### Ticket 8: Slow laptop (Lucas, P4)
+
+Slow but usable is a P4. After a restart, Task Manager showed the file sync client pinning the CPU, and the C: drive was under 5% free. Pausing and resuming sync and clearing about 20 GB fixed it. The solution gives Lucas two habits to keep it from coming back.
+
+![Ticket 8](screenshots/glpi-14-ticket-08-slow-pc.png)
+
+### 6. Results
+
+Eight tickets: six solved by Service Desk L1, one escalated to Security, one to Network. Zero late tickets. Every solved ticket met both its response and resolution targets.
+
+![All eight tickets, sorted by opening date](screenshots/glpi-15-ticket-list.png)
+![Dashboard after the tickets](screenshots/glpi-16-dashboard-with-tickets.png)
+
+### Notes on the GLPI setup
+
+- GLPI closed each ticket the moment I added a solution, because I worked them as the super-admin and it auto-approved my own solutions. On a real desk the requester confirms the fix, or the ticket auto-closes after a few days. That's one setting on the entity.
+- The SLAs run on a 24/7 calendar to keep the timers easy to read. A real desk would attach business hours.
+- GLPI ticket IDs skip 4 and 6. I redid two tickets that had a missing category and a missing time entry, and deleted the drafts. The screenshot files follow the scenario numbers instead.
+
 ## Licensing notes
 
 This lab runs on Entra ID Free, and that shaped a few decisions.
 
-- SSPR for regular users requires Entra ID P1 (or Microsoft 365 Business Standard and up). The portal still lets you switch it on for users on Free, but the license doesn't cover it, so I left it off and demonstrated SSPR with an admin account, which Free does cover.
+- SSPR for regular users requires Entra ID P1 (or Microsoft 365 Business Standard and up). The portal still lets you switch it on for users on Free, but the license doesn't cover it, so I left it off and demonstrated SSPR with an admin account, which Free does cover. GLPI ticket 4 shows what that limit looks like from the help desk side.
 - Dynamic groups and Conditional Access also need P1, so this lab uses assigned groups and security defaults.
 - I tried the free P2 trial. With a Brazil billing address, checkout asks for a CNPJ (a Brazilian business tax ID), which I don't have as an individual.
 
@@ -134,16 +283,20 @@ This lab runs on Entra ID Free, and that shaped a few decisions.
 - Screenshots have tenant IDs, object IDs, temporary passwords, personal emails, phone details, and the MFA QR code redacted. I keep the originals out of the repo.
 - Every lab user has a strong password, and security defaults stay on. These accounts sit on a real public domain, so password-spray attempts are realistic.
 - No Azure subscription is attached, so the tenant has no billable resources.
+- GLPI only listens on localhost. Its `.env` file and database volume are excluded by `.gitignore` and never committed.
 
 ## Next
 
-- GLPI ticketing instance with SLAs and categories, logging the scenarios from this lab as real tickets
-- An AI help desk simulator where Claude plays the caller and grades how the ticket was handled
+- An AI help desk simulator where Claude plays the caller, using these eight scenarios, and grades how the ticket was handled
 
 ## Repo layout
 
 ```
 it-help-desk-lab/
 ├── README.md
-└── screenshots/   01 to 19, in walkthrough order
+├── glpi/
+│   ├── docker-compose.yml
+│   ├── .env.example
+│   └── .gitignore
+└── screenshots/   Entra 01 to 22, GLPI glpi-01 to glpi-16
 ```
