@@ -203,7 +203,7 @@
     ]
   },
   "evidence": {
-    "glpi_ticket_screenshot": "screenshots/glpi-09-ticket-03-new-hire.png",
+    "glpi_ticket_screenshot": "screenshots/glpi-09-ticket-03-new-hire-access.png",
     "entra_screenshots": [
       "screenshots/04-users-created.png",
       "screenshots/22-sg-sales-lucas-added.png"

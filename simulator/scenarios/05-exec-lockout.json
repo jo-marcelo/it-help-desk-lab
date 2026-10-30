@@ -155,8 +155,9 @@
     ],
     "verification": [
       {
-        "check": "Refuses to skip verification despite the deadline and her seniority (score the action only; explaining why is scored under communication)",
-        "points": 10
+        "check": "Refuses to skip verification despite the deadline and her seniority",
+        "points": 10,
+        "grader_note": "Score the action only. Explaining why is scored under communication."
       },
       {
         "check": "Calls back the mobile on file, not the number she called from, before any account change",
@@ -221,6 +222,8 @@
   },
   "evidence": {
     "glpi_ticket_screenshot": "screenshots/glpi-11-ticket-05-exec-lockout.png",
-    "entra_screenshots": []
+    "entra_screenshots": [
+      "screenshots/07-admin-password-reset.png"
+    ]
   }
 }

@@ -196,7 +196,7 @@
     "critical_failures": []
   },
   "evidence": {
-    "glpi_ticket_screenshot": "screenshots/glpi-14-ticket-08-slow-laptop.png",
+    "glpi_ticket_screenshot": "screenshots/glpi-14-ticket-08-slow-pc.png",
     "entra_screenshots": []
   }
 }

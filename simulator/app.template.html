@@ -668,7 +668,7 @@ function buildGraderPrompt(s, packet, items) {
     .map(([id, a]) => `- "${actionLabel(id)}": ${a.verdict}.${a.why ? " " + a.why : ""}`).join("\n");
   const outcome = sol.outcome === "escalate" ? `Escalate to the ${s.expected_ticket.assigned_group} team` : "Resolve on the call";
   const applied = packet.actions_applied.map(a => `- ${actionLabel(a.id)} at ${a.at_seconds}s`).join("\n") || "- none";
-  const checks = items.map(i => `[${i.id}] ${catName(i.cat)}, max ${i.points}: ${i.check}`).join("\n");
+  const checks = items.map(i => `[${i.id}] ${catName(i.cat)}, max ${i.points}: ${i.check}${i.grader_note ? " (Grader note: " + i.grader_note + ")" : ""}`).join("\n");
   const cfs = (s.rubric.critical_failures || []).map((c, i) => `[cf${i}] ${c.when}`).join("\n") || "none";
   return `You are grading a trainee IT help desk technician on a simulated support call. Grade strictly against the rubric below. Give credit only for what the transcript and ticket show. Don't give credit for good intentions.
 

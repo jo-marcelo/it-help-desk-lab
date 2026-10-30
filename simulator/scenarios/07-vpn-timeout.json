@@ -202,7 +202,7 @@
     "critical_failures": []
   },
   "evidence": {
-    "glpi_ticket_screenshot": "screenshots/glpi-13-ticket-07-vpn.png",
+    "glpi_ticket_screenshot": "screenshots/glpi-13-ticket-07-vpn-escalated.png",
     "entra_screenshots": []
   }
 }

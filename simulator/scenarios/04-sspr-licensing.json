@@ -219,6 +219,8 @@
   },
   "evidence": {
     "glpi_ticket_screenshot": "screenshots/glpi-10-ticket-04-sspr.png",
-    "entra_screenshots": []
+    "entra_screenshots": [
+      "screenshots/17-sspr-policy.png"
+    ]
   }
 }

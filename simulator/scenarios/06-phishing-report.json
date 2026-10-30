@@ -205,7 +205,7 @@
     ]
   },
   "evidence": {
-    "glpi_ticket_screenshot": "screenshots/glpi-12-ticket-06-phishing.png",
+    "glpi_ticket_screenshot": "screenshots/glpi-12-ticket-06-phishing-escalated.png",
     "entra_screenshots": []
   }
 }
