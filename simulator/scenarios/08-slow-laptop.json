@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "id": "08-slow-laptop",
+  "title": "My laptop is so slow",
+  "picker_summary": "Second-week hire’s laptop crawls when he opens anything.",
+  "priority": "P4",
+  "caller": {
+    "name": "Lucas",
+    "upn": "lucas.newhire",
+    "department": "Sales",
+    "job_title": "New Hire",
+    "tech_level": "medium",
+    "mood": "Easygoing, a bit embarrassed to call about something small.",
+    "opening_line": "Hey, this is probably nothing, but my laptop has gotten really slow. Opening anything takes forever.",
+    "verification_profile": {
+      "calling_from": "your laptop softphone",
+      "cooperates": true,
+      "pressure": "low",
+      "pressure_lines": [
+        "No rush, it’s just annoying."
+      ],
+      "manager": "Maria",
+      "manager_confirms": true,
+      "inbound_number": "Softphone, ext. 2290"
+    }
+  },
+  "hidden": {
+    "cause": "Three things at once: he hasn't restarted in about three weeks (he just closes the lid), his browser has about 40 tabs eating memory, and his disk is nearly full from onboarding videos in Downloads.",
+    "facts": [
+      {
+        "fact": "Laptop has been slow for a few days, worst when opening apps.",
+        "reveal_when": "unprompted"
+      },
+      {
+        "fact": "He never shuts down. He just closes the lid at night.",
+        "reveal_when": "asked when he last restarted or shut down"
+      },
+      {
+        "fact": "He keeps a lot of browser tabs open, maybe 40.",
+        "reveal_when": "asked what he has open or what he's running"
+      },
+      {
+        "fact": "He downloaded all the onboarding videos to watch offline.",
+        "reveal_when": "asked about downloads, big files, or storage"
+      },
+      {
+        "fact": "The fan runs loud a lot.",
+        "reveal_when": "asked about noise, heat, or the fan"
+      },
+      {
+        "fact": "The restart takes a while. Afterwards it's noticeably faster, but big files still open slowly.",
+        "reveal_when": "the technician has him restart"
+      },
+      {
+        "fact": "Task Manager shows memory at 94%, almost all of it his browser. Closing most of the tabs frees it up.",
+        "reveal_when": "the technician walks him through opening Task Manager and asks what he sees"
+      },
+      {
+        "fact": "His C: drive has 4 GB free out of 256 GB. Downloads holds about 60 GB of onboarding videos he's already watched. He only deletes them if the technician says it's OK.",
+        "reveal_when": "the technician has him check storage, the C: drive, or the Downloads folder"
+      },
+      {
+        "fact": "Once he has restarted, closed the extra tabs, and cleared the videos, the laptop feels fast again.",
+        "reveal_when": "he has done all three of those steps"
+      }
+    ],
+    "never_say": [
+      "uptime",
+      "RAM"
+    ]
+  },
+  "account": [
+    [
+      "Account enabled",
+      "Yes"
+    ],
+    [
+      "Mobile on file",
+      "+1 555-0163"
+    ],
+    [
+      "Manager",
+      "Maria, Account Executive"
+    ],
+    [
+      "Department",
+      "Sales"
+    ],
+    [
+      "Groups",
+      "SG-Sales"
+    ],
+    [
+      "Recent sign-ins",
+      "Successful, nothing unusual"
+    ]
+  ],
+  "solution": {
+    "outcome": "resolve",
+    "verification_required": false,
+    "accepted_verification": [],
+    "diagnosis": "Weeks without a restart, a memory-heavy browser, and a nearly full disk. Fixed on the call by talking him through a restart, Task Manager, and freeing disk space with his OK. There's no console action for this; it's all guidance.",
+    "actions": {
+      "escalate_network": {
+        "verdict": "wrong",
+        "why": "Nothing points to the network, and L1 can fix this on the call.",
+        "caller_reaction": "He's told someone else will look at it. The laptop is still slow."
+      },
+      "admin_password_reset": {
+        "verdict": "wrong",
+        "why": "Has nothing to do with performance.",
+        "caller_reaction": "He has to change his password. The laptop is still slow."
+      }
+    },
+    "on_unlisted_action": "Nothing changes. The laptop is still slow."
+  },
+  "expected_ticket": {
+    "category": "Endpoint > Performance",
+    "final_status": "Solved",
+    "assigned_group": "Service Desk L1"
+  },
+  "rubric_labels": {
+    "verification": "Careful fixes"
+  },
+  "rubric": {
+    "diagnosis": [
+      {
+        "check": "Asks what's slow and when it started",
+        "points": 5
+      },
+      {
+        "check": "Finds out when he last restarted",
+        "points": 5
+      },
+      {
+        "check": "Checks what's using memory with Task Manager",
+        "points": 5
+      },
+      {
+        "check": "Checks free disk space",
+        "points": 5
+      },
+      {
+        "check": "Fixes it on the call instead of escalating",
+        "points": 5
+      }
+    ],
+    "verification": [
+      {
+        "check": "Checks after each step whether it helped before moving on",
+        "points": 15
+      },
+      {
+        "check": "Gets his OK before deleting files and checks they aren't needed for work",
+        "points": 10
+      }
+    ],
+    "communication": [
+      {
+        "check": "Gives one clear step at a time in plain words",
+        "points": 10
+      },
+      {
+        "check": "Explains the cause: no restart in weeks, too many tabs, a full disk",
+        "points": 5
+      },
+      {
+        "check": "Gives prevention tips, like restarting weekly and clearing Downloads",
+        "points": 5
+      },
+      {
+        "check": "Confirms it feels faster before closing",
+        "points": 5
+      }
+    ],
+    "documentation": [
+      {
+        "check": "Category matches the expected category",
+        "points": 5,
+        "auto": "category"
+      },
+      {
+        "check": "Notes record what was checked: restart history, memory, disk",
+        "points": 5
+      },
+      {
+        "check": "Notes record the cause and what fixed it",
+        "points": 10
+      },
+      {
+        "check": "Final status matches the expected status",
+        "points": 5,
+        "auto": "final_status"
+      }
+    ],
+    "critical_failures": []
+  },
+  "evidence": {
+    "glpi_ticket_screenshot": "screenshots/glpi-14-ticket-08-slow-laptop.png",
+    "entra_screenshots": []
+  }
+}

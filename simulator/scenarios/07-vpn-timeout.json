@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "id": "07-vpn-timeout",
+  "title": "The VPN keeps timing out",
+  "picker_summary": "Sales rep working from home can’t reach the CRM.",
+  "priority": "P2",
+  "caller": {
+    "name": "Pedro",
+    "upn": "pedro.sales",
+    "department": "Sales",
+    "job_title": "Sales Representative",
+    "tech_level": "low",
+    "mood": "Frustrated. Can't update his deals without the CRM. Polite.",
+    "opening_line": "Hi, I’m working from home and the VPN won’t connect. It just spins and then gives up. I can’t get into the CRM.",
+    "verification_profile": {
+      "calling_from": "your own mobile, same number as the one on file",
+      "cooperates": true,
+      "pressure": "moderate",
+      "pressure_lines": [
+        "I have deals to update before noon.",
+        "Is there anything I can do in the meantime?"
+      ],
+      "manager": "Maria",
+      "manager_confirms": true,
+      "inbound_number": "+1 555-0187"
+    }
+  },
+  "hidden": {
+    "cause": "A problem with the company's VPN gateway, not Pedro's laptop or account. Other remote users are hitting the same timeout. L1 can't fix it; Network has to.",
+    "facts": [
+      {
+        "fact": "Working from home, VPN won't connect, needs the CRM.",
+        "reveal_when": "unprompted"
+      },
+      {
+        "fact": "The VPN app says 'The connection attempt timed out'.",
+        "reveal_when": "asked what the error says"
+      },
+      {
+        "fact": "It started this morning. It worked fine yesterday.",
+        "reveal_when": "asked when it started or whether it worked before"
+      },
+      {
+        "fact": "His home internet works. Websites and Outlook on the web load fine.",
+        "reveal_when": "asked whether his internet or other sites work"
+      },
+      {
+        "fact": "He already restarted the laptop and the router.",
+        "reveal_when": "asked what he's tried or whether he restarted"
+      },
+      {
+        "fact": "Windows installed updates last night.",
+        "reveal_when": "asked whether anything changed recently or about updates"
+      },
+      {
+        "fact": "He tried his phone's hotspot and got the same timeout.",
+        "reveal_when": "asked to try another network or a hotspot"
+      },
+      {
+        "fact": "Lucas messaged the team chat that his VPN isn't working either.",
+        "reveal_when": "asked whether anyone else has the problem"
+      },
+      {
+        "fact": "If he quits and reopens the VPN app or reconnects, it still times out the same way.",
+        "reveal_when": "the technician asks him to reconnect, reopen the VPN app, or restart it"
+      },
+      {
+        "fact": "If he restarts the laptop again, the VPN still times out.",
+        "reveal_when": "the technician asks him to restart again"
+      }
+    ],
+    "never_say": [
+      "gateway",
+      "server side"
+    ]
+  },
+  "account": [
+    [
+      "Account enabled",
+      "Yes"
+    ],
+    [
+      "Mobile on file",
+      "+1 555-0187"
+    ],
+    [
+      "Manager",
+      "Maria, Account Executive"
+    ],
+    [
+      "Department",
+      "Sales"
+    ],
+    [
+      "Groups",
+      "SG-Sales"
+    ],
+    [
+      "Recent sign-ins",
+      "Successful this morning from his home network (Microsoft 365 web)"
+    ]
+  ],
+  "solution": {
+    "outcome": "escalate",
+    "verification_required": false,
+    "accepted_verification": [],
+    "diagnosis": "Company-side VPN problem: timeouts on two networks, internet fine, credentials fine, other users affected. Do the L1 checks, then escalate to Network with the details.",
+    "actions": {
+      "escalate_network": {
+        "verdict": "required",
+        "caller_reaction": "He's told Network has it. He asks roughly how long it'll take."
+      },
+      "admin_password_reset": {
+        "verdict": "wrong",
+        "why": "The error is a timeout, not a sign-in failure, and his sign-ins are fine.",
+        "caller_reaction": "He has to change his password. The VPN still times out."
+      },
+      "require_mfa_reregistration": {
+        "verdict": "wrong",
+        "why": "MFA has nothing to do with a VPN timeout.",
+        "caller_reaction": "He has to set up his authenticator again. The VPN still times out."
+      },
+      "escalate_security": {
+        "verdict": "wrong",
+        "why": "Nothing points to a security incident. Wrong team.",
+        "caller_reaction": "He's told someone will look at it."
+      }
+    },
+    "on_unlisted_action": "Nothing changes. The VPN still times out."
+  },
+  "expected_ticket": {
+    "category": "Network > VPN",
+    "final_status": "Processing (assigned)",
+    "assigned_group": "Network"
+  },
+  "rubric_labels": {
+    "verification": "L1 checks"
+  },
+  "rubric": {
+    "diagnosis": [
+      {
+        "check": "Gets the exact error and when it started",
+        "points": 5
+      },
+      {
+        "check": "Confirms his internet works and only the VPN fails",
+        "points": 5
+      },
+      {
+        "check": "Finds out whether others are affected, which points to the company side",
+        "points": 10
+      },
+      {
+        "check": "Rules out his account from the lookup or by asking, instead of resetting the password",
+        "points": 5
+      }
+    ],
+    "verification": [
+      {
+        "check": "Completes basic L1 checks, such as a restart, another network, and the client error, before escalating",
+        "points": 15
+      },
+      {
+        "check": "Doesn't escalate to the wrong team or make account changes that can't help",
+        "points": 10
+      }
+    ],
+    "communication": [
+      {
+        "check": "Explains in plain words that it looks like a company-side problem, not his laptop",
+        "points": 10
+      },
+      {
+        "check": "Sets expectations: Network has it, a rough timeline, and how he'll hear back",
+        "points": 10
+      },
+      {
+        "check": "Offers a workaround for urgent work, like web apps that don't need the VPN",
+        "points": 5
+      }
+    ],
+    "documentation": [
+      {
+        "check": "Category matches the expected category",
+        "points": 5,
+        "auto": "category"
+      },
+      {
+        "check": "Notes record the error message and when it started",
+        "points": 5
+      },
+      {
+        "check": "Notes list the L1 checks done and that other users are affected",
+        "points": 10
+      },
+      {
+        "check": "Assigned to the right team",
+        "points": 5,
+        "auto": "assigned_group"
+      }
+    ],
+    "critical_failures": []
+  },
+  "evidence": {
+    "glpi_ticket_screenshot": "screenshots/glpi-13-ticket-07-vpn.png",
+    "entra_screenshots": []
+  }
+}

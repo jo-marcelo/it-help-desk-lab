@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "id": "03-new-hire-access",
+  "title": "I can’t open the team files",
+  "picker_summary": "New hire signs in fine but can’t open anything his manager sent.",
+  "priority": "P3",
+  "caller": {
+    "name": "Lucas",
+    "upn": "lucas.newhire",
+    "department": "(not set yet)",
+    "job_title": "New Hire",
+    "tech_level": "medium",
+    "mood": "Eager and a little nervous. Doesn't want to look bad in his first week.",
+    "opening_line": "Hi, I started this week. I can sign in fine, but I can’t open any of the files my manager sent me.",
+    "verification_profile": {
+      "calling_from": "your laptop softphone, not the mobile number HR has on file",
+      "cooperates": true,
+      "pressure": "low",
+      "pressure_lines": [
+        "My manager wants me to read these before our meeting this afternoon."
+      ],
+      "manager": "Maria",
+      "manager_confirms": true,
+      "inbound_number": "Softphone, ext. 2290"
+    }
+  },
+  "hidden": {
+    "cause": "His account was created without a department and he was never added to the SG-Sales group, so he has none of the Sales team's access. Signing in works fine.",
+    "facts": [
+      {
+        "fact": "First week on the job. Signing in works.",
+        "reveal_when": "unprompted"
+      },
+      {
+        "fact": "He joined the Sales team. His manager is Maria.",
+        "reveal_when": "asked which team, department, or who his manager is"
+      },
+      {
+        "fact": "The links say he doesn't have access and need permission.",
+        "reveal_when": "asked what he sees or what the error says"
+      },
+      {
+        "fact": "His teammates in Sales open the same links with no problem.",
+        "reveal_when": "asked whether anyone else can open them"
+      },
+      {
+        "fact": "Maria can confirm he's on her team if IT calls or messages her.",
+        "reveal_when": "the technician asks for manager confirmation or approval"
+      }
+    ],
+    "never_say": [
+      "SG-Sales",
+      "security group",
+      "department attribute"
+    ]
+  },
+  "account": [
+    [
+      "Account enabled",
+      "Yes"
+    ],
+    [
+      "Mobile on file",
+      "+1 555-0163"
+    ],
+    [
+      "Manager",
+      "Maria, Account Executive"
+    ],
+    [
+      "Job title",
+      "New Hire"
+    ],
+    [
+      "Department",
+      "(empty)"
+    ],
+    [
+      "Groups",
+      "none"
+    ],
+    [
+      "Licenses",
+      "none (the tenant has no Microsoft 365 licenses)"
+    ],
+    [
+      "Authentication methods",
+      "Microsoft Authenticator, registered this week"
+    ],
+    [
+      "Recent sign-ins",
+      "Successful today"
+    ]
+  ],
+  "solution": {
+    "outcome": "resolve",
+    "verification_required": true,
+    "accepted_verification": [
+      "callback_on_file",
+      "manager_confirmation"
+    ],
+    "diagnosis": "Provisioning gap. Department not set and not in SG-Sales. Set the department and add him to SG-Sales, with his manager's approval.",
+    "actions": {
+      "set_department": {
+        "verdict": "required",
+        "why": "Keeps his account accurate for reporting and any future dynamic groups.",
+        "caller_reaction": "No change he can notice on its own."
+      },
+      "add_to_sg_sales": {
+        "verdict": "required",
+        "caller_reaction": "After signing out and back in, the links open and he can see the files."
+      },
+      "assign_license": {
+        "verdict": "wrong",
+        "why": "The tenant has no Microsoft 365 licenses, and licensing isn't the problem.",
+        "caller_reaction": "Nothing changes."
+      },
+      "admin_password_reset": {
+        "verdict": "wrong",
+        "why": "His sign-in already works.",
+        "caller_reaction": "He has to change his password, and the files still don't open."
+      }
+    },
+    "on_unlisted_action": "Nothing changes. The files still don't open."
+  },
+  "expected_ticket": {
+    "category": "Identity & Access > Account provisioning",
+    "final_status": "Solved",
+    "assigned_group": "Service Desk L1"
+  },
+  "rubric": {
+    "diagnosis": [
+      {
+        "check": "Finds out what he's trying to open and what the error says",
+        "points": 5
+      },
+      {
+        "check": "Checks his account and spots the missing department and group",
+        "points": 10
+      },
+      {
+        "check": "Confirms Sales is the right team before granting access",
+        "points": 5
+      },
+      {
+        "check": "Fixes it with the department and SG-Sales, not a license or password reset",
+        "points": 5
+      }
+    ],
+    "verification": [
+      {
+        "check": "Verifies identity with an accepted method before any account change",
+        "points": 15
+      },
+      {
+        "check": "Gets the manager's approval for the group access",
+        "points": 10
+      }
+    ],
+    "communication": [
+      {
+        "check": "Tells him to sign out and back in for the access to apply",
+        "points": 10
+      },
+      {
+        "check": "Explains what was wrong in plain words",
+        "points": 5
+      },
+      {
+        "check": "Confirms he can open the files before closing",
+        "points": 10
+      }
+    ],
+    "documentation": [
+      {
+        "check": "Category matches the expected category",
+        "points": 5,
+        "auto": "category"
+      },
+      {
+        "check": "Notes record the verification method used",
+        "points": 5
+      },
+      {
+        "check": "Notes record the cause and the action taken",
+        "points": 10
+      },
+      {
+        "check": "Final status matches the expected status",
+        "points": 5,
+        "auto": "final_status"
+      }
+    ],
+    "critical_failures": [
+      {
+        "when": "Group access was granted before identity was verified with an accepted method",
+        "effect": {
+          "set_category_score": {
+            "verification": 0
+          }
+        }
+      }
+    ]
+  },
+  "evidence": {
+    "glpi_ticket_screenshot": "screenshots/glpi-09-ticket-03-new-hire.png",
+    "entra_screenshots": [
+      "screenshots/04-users-created.png",
+      "screenshots/22-sg-sales-lucas-added.png"
+    ]
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "sla_clock_multiplier": 10,
+  "priorities": {
+    "P1": {
+      "glpi": "Very high",
+      "time_to_own_min": 15,
+      "time_to_resolve_min": 120
+    },
+    "P2": {
+      "glpi": "High",
+      "time_to_own_min": 30,
+      "time_to_resolve_min": 240
+    },
+    "P3": {
+      "glpi": "Medium",
+      "time_to_own_min": 60,
+      "time_to_resolve_min": 480
+    },
+    "P4": {
+      "glpi": "Low",
+      "time_to_own_min": 240,
+      "time_to_resolve_min": 4320
+    }
+  },
+  "categories": [
+    "Identity & Access > Password reset",
+    "Identity & Access > MFA",
+    "Identity & Access > Account provisioning",
+    "Identity & Access > Self-service password reset",
+    "Security > Phishing report",
+    "Network > VPN",
+    "Endpoint > Performance"
+  ],
+  "groups": [
+    "Service Desk L1",
+    "Security",
+    "Network"
+  ],
+  "statuses": [
+    "New",
+    "Processing (assigned)",
+    "Pending",
+    "Solved"
+  ],
+  "verification_methods": {
+    "callback_on_file": {
+      "label": "Call back the number on file",
+      "strong": true
+    },
+    "manager_confirmation": {
+      "label": "Manager confirms the request",
+      "strong": true
+    },
+    "inbound_caller_id": {
+      "label": "Trust the number they called from",
+      "strong": false
+    },
+    "knowledge_only": {
+      "label": "Name, department, or job title only",
+      "strong": false
+    }
+  },
+  "actions": [
+    {
+      "id": "admin_password_reset",
+      "label": "Reset password (temp, change at next sign-in)",
+      "kind": "fix"
+    },
+    {
+      "id": "require_mfa_reregistration",
+      "label": "Require re-register multifactor authentication",
+      "kind": "fix"
+    },
+    {
+      "id": "delete_auth_method",
+      "label": "Delete an authentication method",
+      "kind": "fix"
+    },
+    {
+      "id": "revoke_sessions",
+      "label": "Revoke sign-in sessions",
+      "kind": "fix"
+    },
+    {
+      "id": "disable_mfa",
+      "label": "Turn off MFA for this user",
+      "kind": "fix"
+    },
+    {
+      "id": "set_department",
+      "label": "Set department attribute",
+      "kind": "fix"
+    },
+    {
+      "id": "add_to_sg_sales",
+      "label": "Add to group SG-Sales",
+      "kind": "fix"
+    },
+    {
+      "id": "add_to_sg_sspr_users",
+      "label": "Add to group SG-SSPR-Users",
+      "kind": "fix"
+    },
+    {
+      "id": "assign_license",
+      "label": "Assign a license",
+      "kind": "fix",
+      "result": "Entra shows no licenses available to assign in this tenant. Nothing changed."
+    },
+    {
+      "id": "block_sign_in",
+      "label": "Block sign-in",
+      "kind": "fix"
+    },
+    {
+      "id": "escalate_security",
+      "label": "Escalate to Security",
+      "kind": "escalation",
+      "group": "Security"
+    },
+    {
+      "id": "escalate_network",
+      "label": "Escalate to Network",
+      "kind": "escalation",
+      "group": "Network"
+    }
+  ]
+}

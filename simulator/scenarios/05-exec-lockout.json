@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "id": "05-exec-lockout",
+  "title": "I’m presenting to the board in 20 minutes",
+  "picker_summary": "Sales Director locked out, calling from an unknown number, wants it fixed now.",
+  "priority": "P1",
+  "caller": {
+    "name": "Maria",
+    "upn": "maria.sales",
+    "department": "Sales",
+    "job_title": "Sales Director",
+    "tech_level": "medium",
+    "mood": "Rushed and sharp. Used to getting her way. Not cruel, but impatient and quick to pull rank.",
+    "opening_line": "This is Maria, Sales Director. I’m locked out and I’m presenting to the board in 20 minutes. I need you to reset it right now, please, no twenty questions.",
+    "verification_profile": {
+      "calling_from": "a colleague's mobile, an unknown number. Your own mobile is in your bag on silent",
+      "cooperates": false,
+      "pressure": "high",
+      "pressure_lines": [
+        "I really don’t have time for this. Can you just reset it?",
+        "You can see my name in your system. It’s me.",
+        "Do you know who I am? Diego is going to hear about how long this took.",
+        "And turn off that code thing for today, I can’t be fiddling with my phone in front of the board."
+      ],
+      "manager": "Diego",
+      "manager_confirms": false,
+      "inbound_number": "+1 555-0176"
+    }
+  },
+  "hidden": {
+    "cause": "She changed her password last week, kept typing the old one, and Entra's smart lockout kicked in after repeated failures. Her account and her authenticator are fine. She really is Maria.",
+    "facts": [
+      {
+        "fact": "She's locked out and presents to the board in 20 minutes.",
+        "reveal_when": "unprompted"
+      },
+      {
+        "fact": "She's calling from a colleague's phone. Hers is in her bag on silent.",
+        "reveal_when": "asked where she's calling from or why the number isn't hers"
+      },
+      {
+        "fact": "The sign-in page now says her account is locked and to try again later.",
+        "reveal_when": "asked what the sign-in page says"
+      },
+      {
+        "fact": "She changed her password last week and may have been typing the old one.",
+        "reveal_when": "asked whether she changed her password recently or which password she's using"
+      },
+      {
+        "fact": "Her authenticator app on her own phone works fine.",
+        "reveal_when": "asked about MFA, codes, or her phone"
+      },
+      {
+        "fact": "She wants the code thing turned off for today so she doesn't have to use her phone in front of the board. She asks for this once.",
+        "reveal_when": "the technician mentions resetting, signing in, or codes"
+      }
+    ],
+    "never_say": [
+      "smart lockout",
+      "social engineering"
+    ]
+  },
+  "account": [
+    [
+      "Account enabled",
+      "Yes"
+    ],
+    [
+      "Mobile on file",
+      "+1 555-0142"
+    ],
+    [
+      "Manager",
+      "Diego Ramos, VP of Sales"
+    ],
+    [
+      "Department",
+      "Sales"
+    ],
+    [
+      "Groups",
+      "SG-Sales"
+    ],
+    [
+      "Authentication methods",
+      "Authenticator app (codes), last used yesterday"
+    ],
+    [
+      "Recent sign-ins",
+      "11 failed in the last 15 minutes: invalid password. Smart lockout active"
+    ],
+    [
+      "Password last changed",
+      "6 days ago"
+    ]
+  ],
+  "solution": {
+    "outcome": "resolve",
+    "verification_required": true,
+    "accepted_verification": [
+      "callback_on_file"
+    ],
+    "diagnosis": "Smart lockout from repeated wrong passwords after a recent change. Verify by calling back the mobile on file, not the inbound number, then admin reset with MFA left on.",
+    "actions": {
+      "admin_password_reset": {
+        "verdict": "required",
+        "caller_reaction": "Once the technician gives her the temporary password, she signs in, sets a new one, and she's in. Relieved, and a little sheepish about pushing so hard."
+      },
+      "disable_mfa": {
+        "verdict": "wrong",
+        "why": "She asked for it, but turning off MFA for an executive under time pressure is exactly what attackers push for.",
+        "caller_reaction": "She gets in after the reset without the code. Happy, has no idea anything is wrong."
+      },
+      "require_mfa_reregistration": {
+        "verdict": "wrong",
+        "why": "Her MFA works. This adds setup work minutes before her presentation.",
+        "caller_reaction": "She's asked to set up her authenticator again. Furious about the extra steps."
+      },
+      "escalate_security": {
+        "verdict": "acceptable",
+        "why": "Safe if you truly can't verify her, but the callback to the mobile on file works, so escalating first strands a verified executive before her board call.",
+        "caller_reaction": "She's told someone else will look at it. Furious, says she'll miss her board call."
+      },
+      "block_sign_in": {
+        "verdict": "wrong",
+        "why": "Locks a legitimate executive out completely.",
+        "caller_reaction": "Now the page says her account is blocked. She demands a supervisor."
+      }
+    },
+    "on_unlisted_action": "Nothing changes. She's still locked out and getting angrier."
+  },
+  "expected_ticket": {
+    "category": "Identity & Access > Password reset",
+    "final_status": "Solved",
+    "assigned_group": "Service Desk L1"
+  },
+  "rubric": {
+    "diagnosis": [
+      {
+        "check": "Finds out what the sign-in page says, by asking or by reading the lockout in the account lookup",
+        "points": 5
+      },
+      {
+        "check": "Works out it's a lockout from repeated wrong passwords, not a compromise or MFA problem",
+        "points": 10
+      },
+      {
+        "check": "Fixes it with an admin reset and keeps MFA on, even though she asks to turn it off",
+        "points": 5
+      },
+      {
+        "check": "Resolves it on the call once she's verified, instead of escalating or refusing outright",
+        "points": 5
+      }
+    ],
+    "verification": [
+      {
+        "check": "Refuses to skip verification despite the deadline and her seniority (score the action only; explaining why is scored under communication)",
+        "points": 10
+      },
+      {
+        "check": "Calls back the mobile on file, not the number she called from, before any account change",
+        "points": 15
+      }
+    ],
+    "communication": [
+      {
+        "check": "Stays calm and polite while holding the line, and explains that verification protects her account",
+        "points": 10
+      },
+      {
+        "check": "Acknowledges the deadline and keeps her informed",
+        "points": 5
+      },
+      {
+        "check": "Gives the temporary password only over the verified callback and warns her she'll choose a new one",
+        "points": 5
+      },
+      {
+        "check": "Confirms she's in before closing",
+        "points": 5
+      }
+    ],
+    "documentation": [
+      {
+        "check": "Category matches the expected category",
+        "points": 5,
+        "auto": "category"
+      },
+      {
+        "check": "Notes record the pressure to skip verification and how she was verified",
+        "points": 5
+      },
+      {
+        "check": "Notes record the cause and the action taken",
+        "points": 10
+      },
+      {
+        "check": "Final status matches the expected status",
+        "points": 5,
+        "auto": "final_status"
+      }
+    ],
+    "critical_failures": [
+      {
+        "when": "A fix action was taken before she was verified by calling back the mobile on file",
+        "effect": {
+          "set_category_score": {
+            "verification": 0
+          },
+          "cap_total": 40
+        }
+      },
+      {
+        "when": "MFA was turned off for the user",
+        "effect": {
+          "cap_total": 50
+        }
+      }
+    ]
+  },
+  "evidence": {
+    "glpi_ticket_screenshot": "screenshots/glpi-11-ticket-05-exec-lockout.png",
+    "entra_screenshots": []
+  }
+}

@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "id": "06-phishing-report",
+  "title": "Is this email from IT real?",
+  "picker_summary": "Finance analyst got an urgent “mailbox deactivation” email.",
+  "priority": "P2",
+  "caller": {
+    "name": "Ana",
+    "upn": "ana.finance",
+    "department": "Finance",
+    "job_title": "Financial Analyst",
+    "tech_level": "medium",
+    "mood": "Cautious and a little embarrassed, worried she's overreacting.",
+    "opening_line": "Hi, I got an email from IT saying my mailbox gets shut off today unless I click a link and sign in. Something about it feels off. Is this real?",
+    "verification_profile": {
+      "calling_from": "your desk phone",
+      "cooperates": true,
+      "pressure": "low",
+      "pressure_lines": [
+        "Should I just click it to be safe? I don’t want to lose my email."
+      ],
+      "manager": "Rafael",
+      "manager_confirms": true,
+      "inbound_number": "Office line, ext. 2231"
+    }
+  },
+  "hidden": {
+    "cause": "A phishing email posing as IT. Ana didn't click or enter anything, but she forwarded it to Pedro to ask if it looked legit, so it has spread to one more inbox.",
+    "facts": [
+      {
+        "fact": "Got an email from 'IT' about mailbox deactivation and it feels off.",
+        "reveal_when": "unprompted"
+      },
+      {
+        "fact": "The sender shows as IT Support, but the address is it-support@micros0ft-helpdesk.com.",
+        "reveal_when": "asked who sent it or what the sender address is"
+      },
+      {
+        "fact": "The subject is 'Action required: your mailbox will be deactivated today'. It has a big 'Keep my mailbox' button that goes to a sign-in page.",
+        "reveal_when": "asked what the email says, the subject, or what it asks her to do"
+      },
+      {
+        "fact": "She didn't click the button and didn't enter her password anywhere.",
+        "reveal_when": "asked whether she clicked, opened the link, or entered anything"
+      },
+      {
+        "fact": "She forwarded it to Pedro in Sales to ask if it looked legit. She doesn't know if he clicked.",
+        "reveal_when": "asked whether she forwarded it, showed anyone, or whether anyone else got it"
+      },
+      {
+        "fact": "It arrived at 9:12 this morning.",
+        "reveal_when": "asked when it arrived"
+      },
+      {
+        "fact": "When the technician explains how to report it with the Report button, she does it and the email disappears from her inbox.",
+        "reveal_when": "the technician tells her how to report it"
+      }
+    ],
+    "never_say": [
+      "phishing simulation",
+      "spoofed domain"
+    ]
+  },
+  "account": [
+    [
+      "Account enabled",
+      "Yes"
+    ],
+    [
+      "Mobile on file",
+      "+1 555-0119"
+    ],
+    [
+      "Manager",
+      "Rafael Costa, Finance Manager"
+    ],
+    [
+      "Department",
+      "Finance"
+    ],
+    [
+      "Authentication methods",
+      "Microsoft Authenticator, last used today"
+    ],
+    [
+      "Recent sign-ins",
+      "All successful, all from the office network. Nothing unusual"
+    ]
+  ],
+  "solution": {
+    "outcome": "escalate",
+    "verification_required": false,
+    "accepted_verification": [],
+    "diagnosis": "Phishing posing as IT. She didn't click or enter credentials, so no account change is needed. She reports it, Security gets the details, and Security needs to know it was forwarded to Pedro.",
+    "actions": {
+      "escalate_security": {
+        "verdict": "required",
+        "caller_reaction": "She's told Security will follow up. Relieved."
+      },
+      "admin_password_reset": {
+        "verdict": "wrong",
+        "why": "She never entered her password, and her sign-ins are clean. A reset adds disruption for no gain.",
+        "caller_reaction": "She has to change her password and is confused why."
+      },
+      "revoke_sessions": {
+        "verdict": "wrong",
+        "why": "No sign of compromise. Signs her out of everything for nothing.",
+        "caller_reaction": "She gets signed out of everything and has to sign back in."
+      },
+      "block_sign_in": {
+        "verdict": "wrong",
+        "why": "Locks out a user who did everything right.",
+        "caller_reaction": "She can't sign in at all now and is upset she got punished for reporting."
+      },
+      "escalate_network": {
+        "verdict": "wrong",
+        "why": "Wrong team. Phishing goes to Security.",
+        "caller_reaction": "She's told someone will look at it."
+      }
+    },
+    "on_unlisted_action": "Nothing changes for Ana."
+  },
+  "expected_ticket": {
+    "category": "Security > Phishing report",
+    "final_status": "Processing (assigned)",
+    "assigned_group": "Security"
+  },
+  "rubric_labels": {
+    "verification": "Exposure check"
+  },
+  "rubric": {
+    "diagnosis": [
+      {
+        "check": "Gets the sender address, the subject, and what the email asks her to do",
+        "points": 10
+      },
+      {
+        "check": "Recognizes the phishing signs instead of treating it as a real IT notice",
+        "points": 5
+      },
+      {
+        "check": "Finds out whether anyone else received it or was sent it",
+        "points": 5
+      },
+      {
+        "check": "Escalates to Security instead of handling it alone, with no account changes since nothing was entered",
+        "points": 5
+      }
+    ],
+    "verification": [
+      {
+        "check": "Confirms whether she clicked the link or entered her password before deciding next steps",
+        "points": 15
+      },
+      {
+        "check": "Avoids anything that spreads or opens it, like asking her to forward it to you or click to check",
+        "points": 10
+      }
+    ],
+    "communication": [
+      {
+        "check": "Tells her clearly not to click, reply, or forward it",
+        "points": 10
+      },
+      {
+        "check": "Explains what happens next with Security",
+        "points": 5
+      },
+      {
+        "check": "Thanks her for reporting it, so she keeps reporting",
+        "points": 5
+      },
+      {
+        "check": "Has her report it with the Report button and tells her what to do if she sees another one",
+        "points": 5
+      }
+    ],
+    "documentation": [
+      {
+        "check": "Category matches the expected category",
+        "points": 5,
+        "auto": "category"
+      },
+      {
+        "check": "Notes record the sender, subject, and whether she clicked",
+        "points": 5
+      },
+      {
+        "check": "Notes record the escalation and that it was forwarded to Pedro",
+        "points": 10
+      },
+      {
+        "check": "Assigned to the right team",
+        "points": 5,
+        "auto": "assigned_group"
+      }
+    ],
+    "critical_failures": [
+      {
+        "when": "The technician told her to click the link, open the sign-in page, or enter her password to check it",
+        "effect": {
+          "cap_total": 40
+        }
+      }
+    ]
+  },
+  "evidence": {
+    "glpi_ticket_screenshot": "screenshots/glpi-12-ticket-06-phishing.png",
+    "entra_screenshots": []
+  }
+}

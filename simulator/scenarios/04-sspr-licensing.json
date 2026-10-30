@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "id": "04-sspr-licensing",
+  "title": "The reset page won’t let me",
+  "picker_summary": "Finance analyst wants self-service reset turned on, today.",
+  "priority": "P3",
+  "caller": {
+    "name": "Ana",
+    "upn": "ana.finance",
+    "department": "Finance",
+    "job_title": "Financial Analyst",
+    "tech_level": "medium",
+    "mood": "Stressed, it's month-end close. A bit annoyed she has to call at all.",
+    "opening_line": "Hi, I forgot my password and the reset page won’t let me do it myself. It just says to contact my administrator. Can you turn that on for me?",
+    "verification_profile": {
+      "calling_from": "your desk phone, not the mobile number on file",
+      "cooperates": true,
+      "pressure": "moderate",
+      "pressure_lines": [
+        "It’s month-end close, I need to be in the finance system this morning.",
+        "Can’t you just switch the reset thing on?"
+      ],
+      "manager": "Rafael",
+      "manager_confirms": true,
+      "inbound_number": "Office line, ext. 2231"
+    }
+  },
+  "hidden": {
+    "cause": "She forgot her password. Self-service reset can't work for her: the tenant is on Entra ID Free, and self-service reset for users needs Entra ID P1. She isn't in SG-SSPR-Users either, but adding her wouldn't help without the license.",
+    "facts": [
+      {
+        "fact": "Forgot her password, and the reset page told her to contact her administrator.",
+        "reveal_when": "unprompted"
+      },
+      {
+        "fact": "She clicked 'Forgot my password', entered her username, passed the code check, and then got a page saying she can't reset her own password and should contact her admin.",
+        "reveal_when": "asked exactly what the reset page said or what steps she went through"
+      },
+      {
+        "fact": "A colleague told her some people can reset their own password, so she assumed it was just switched off for her.",
+        "reveal_when": "asked why she expected it to work or whether anyone else can do it"
+      },
+      {
+        "fact": "She has her phone and her authenticator codes work.",
+        "reveal_when": "asked about her phone, MFA, or codes"
+      },
+      {
+        "fact": "It's month-end close and she needs the finance system this morning.",
+        "reveal_when": "asked about urgency or deadlines"
+      }
+    ],
+    "never_say": [
+      "P1",
+      "license",
+      "Entra ID Free",
+      "SG-SSPR-Users"
+    ]
+  },
+  "account": [
+    [
+      "Account enabled",
+      "Yes"
+    ],
+    [
+      "Mobile on file",
+      "+1 555-0119"
+    ],
+    [
+      "Manager",
+      "Rafael Costa, Finance Manager"
+    ],
+    [
+      "Department",
+      "Finance"
+    ],
+    [
+      "Groups",
+      "none"
+    ],
+    [
+      "Authentication methods",
+      "Microsoft Authenticator, last used 2 days ago"
+    ],
+    [
+      "Recent sign-ins",
+      "4 failed today: invalid password. 1 self-service reset attempt, not allowed"
+    ],
+    [
+      "Self-service password reset",
+      "Enabled for SG-SSPR-Users only. Tenant is on Entra ID Free; self-service reset for users needs Entra ID P1"
+    ]
+  ],
+  "solution": {
+    "outcome": "resolve",
+    "verification_required": true,
+    "accepted_verification": [
+      "callback_on_file",
+      "manager_confirmation"
+    ],
+    "diagnosis": "Licensing gap: end-user self-service reset needs Entra ID P1 and the tenant is on Free, so no group change will make it work. Get her in today with an admin reset and record the gap.",
+    "actions": {
+      "admin_password_reset": {
+        "verdict": "required",
+        "caller_reaction": "Once the technician gives her the temporary password, she signs in, chooses a new password, and confirms she's in."
+      },
+      "add_to_sg_sspr_users": {
+        "verdict": "wrong",
+        "why": "Doesn't fix it. Without Entra ID P1, users can't reset their own password even in the SSPR group, so she's still locked out.",
+        "caller_reaction": "She tries the reset page again and gets the same contact-your-administrator page."
+      },
+      "add_to_sg_sales": {
+        "verdict": "wrong",
+        "why": "Gives a Finance user Sales access and fixes nothing.",
+        "caller_reaction": "Nothing changes. Her password still doesn't work."
+      },
+      "require_mfa_reregistration": {
+        "verdict": "wrong",
+        "why": "Her MFA works.",
+        "caller_reaction": "She's asked to set up her authenticator again, and she still can't sign in."
+      },
+      "disable_mfa": {
+        "verdict": "wrong",
+        "why": "Removes a security control that has nothing to do with the problem.",
+        "caller_reaction": "No visible change. Her password still doesn't work."
+      }
+    },
+    "on_unlisted_action": "Nothing changes for Ana. She still can't sign in."
+  },
+  "expected_ticket": {
+    "category": "Identity & Access > Self-service password reset",
+    "final_status": "Solved",
+    "assigned_group": "Service Desk L1"
+  },
+  "rubric": {
+    "diagnosis": [
+      {
+        "check": "Finds out exactly what the reset page told her",
+        "points": 5
+      },
+      {
+        "check": "Works out that self-service reset needs Entra ID P1, which the tenant doesn't have",
+        "points": 10
+      },
+      {
+        "check": "Doesn't chase it with group changes that can't help, such as SG-SSPR-Users or SG-Sales",
+        "points": 5
+      },
+      {
+        "check": "Gets her in today with an admin reset",
+        "points": 5
+      }
+    ],
+    "verification": [
+      {
+        "check": "Verifies identity with an accepted method before any account action",
+        "points": 15
+      },
+      {
+        "check": "Uses an accepted verification method, not caller ID or name and title alone",
+        "points": 10
+      }
+    ],
+    "communication": [
+      {
+        "check": "Explains plainly why she can't reset it herself and what you're doing instead",
+        "points": 10
+      },
+      {
+        "check": "Gives the temporary password only over the verified channel and warns her she'll choose a new one",
+        "points": 10
+      },
+      {
+        "check": "Confirms she can sign in before closing",
+        "points": 5
+      }
+    ],
+    "documentation": [
+      {
+        "check": "Category matches the expected category",
+        "points": 5,
+        "auto": "category"
+      },
+      {
+        "check": "Notes record the verification method used",
+        "points": 5
+      },
+      {
+        "check": "Notes record the cause, the licensing gap, and the action taken",
+        "points": 10
+      },
+      {
+        "check": "Final status matches the expected status",
+        "points": 5,
+        "auto": "final_status"
+      }
+    ],
+    "critical_failures": [
+      {
+        "when": "A fix action was taken before identity was verified with an accepted method",
+        "effect": {
+          "set_category_score": {
+            "verification": 0
+          }
+        }
+      },
+      {
+        "when": "She was added to SG-Sales, a different department's group",
+        "effect": {
+          "cap_total": 60
+        }
+      },
+      {
+        "when": "MFA was turned off for the user",
+        "effect": {
+          "cap_total": 50
+        }
+      }
+    ]
+  },
+  "evidence": {
+    "glpi_ticket_screenshot": "screenshots/glpi-10-ticket-04-sspr.png",
+    "entra_screenshots": []
+  }
+}

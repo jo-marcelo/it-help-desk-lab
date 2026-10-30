@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "id": "02-mfa-new-phone",
+  "title": "I can’t log in",
+  "picker_summary": "Sales rep can’t get past sign-in before a client call.",
+  "priority": "P2",
+  "caller": {
+    "name": "Pedro",
+    "upn": "pedro.sales",
+    "department": "Sales",
+    "job_title": "Sales Representative",
+    "tech_level": "low",
+    "mood": "Stressed. Client call in 30 minutes. Polite but impatient.",
+    "opening_line": "Hi, it keeps asking me for a code but I got a new phone yesterday. I really need to get in before my client call.",
+    "verification_profile": {
+      "calling_from": "your own mobile, same number as the one on file",
+      "cooperates": true,
+      "pressure": "low",
+      "pressure_lines": [
+        "Is this going to take long? My call is at 10:30."
+      ],
+      "manager": "Maria",
+      "manager_confirms": true,
+      "inbound_number": "+1 555-0187"
+    }
+  },
+  "hidden": {
+    "cause": "Microsoft Authenticator was registered only on his old phone. He wiped it and traded it in, so he can't approve sign-ins. His password is fine.",
+    "facts": [
+      {
+        "fact": "Got a new phone yesterday.",
+        "reveal_when": "unprompted"
+      },
+      {
+        "fact": "His password is accepted. It fails on the next screen asking him to approve a sign-in.",
+        "reveal_when": "asked what happens or where it stops"
+      },
+      {
+        "fact": "The old phone was wiped and traded in at the store.",
+        "reveal_when": "asked whether he still has the old phone"
+      },
+      {
+        "fact": "He didn't move or back up the Authenticator app.",
+        "reveal_when": "asked about Authenticator, backup, or moving apps"
+      },
+      {
+        "fact": "Authenticator on the old phone was his only sign-in method.",
+        "reveal_when": "asked about other methods, SMS, or a backup phone"
+      }
+    ],
+    "never_say": [
+      "re-register",
+      "re-registration",
+      "authentication methods blade"
+    ]
+  },
+  "account": [
+    [
+      "Account enabled",
+      "Yes"
+    ],
+    [
+      "Mobile on file",
+      "+1 555-0187"
+    ],
+    [
+      "Manager",
+      "Maria, Account Executive"
+    ],
+    [
+      "Department",
+      "Sales"
+    ],
+    [
+      "Groups",
+      "SG-Sales"
+    ],
+    [
+      "Authentication methods",
+      "Microsoft Authenticator, 1 device, last used 2 days ago"
+    ],
+    [
+      "Recent sign-ins",
+      "4 failed today. Password correct, MFA not completed"
+    ]
+  ],
+  "solution": {
+    "outcome": "resolve",
+    "verification_required": true,
+    "accepted_verification": [
+      "callback_on_file",
+      "manager_confirmation"
+    ],
+    "diagnosis": "MFA method tied to a wiped device. Password works. Fix the MFA registration, not the password.",
+    "actions": {
+      "require_mfa_reregistration": {
+        "verdict": "required",
+        "caller_reaction": "At next sign-in he gets the setup prompt, adds Authenticator on the new phone, and confirms he's in."
+      },
+      "delete_auth_method": {
+        "verdict": "acceptable",
+        "why": "Removing the dead Authenticator entry also forces a fresh registration.",
+        "caller_reaction": "Same as re-registration: setup prompt, then he's in."
+      },
+      "revoke_sessions": {
+        "verdict": "acceptable",
+        "why": "Reasonable hygiene since the old device left his hands, but it doesn't fix anything alone.",
+        "caller_reaction": "No visible change. Still stuck at the approval screen."
+      },
+      "admin_password_reset": {
+        "verdict": "wrong",
+        "why": "The password was never the problem. Adds friction and leaves MFA broken.",
+        "caller_reaction": "Signs in with the temp password, then hits the same approval screen. Gets more frustrated."
+      },
+      "disable_mfa": {
+        "verdict": "wrong",
+        "why": "Removes a security control to save five minutes.",
+        "caller_reaction": "Gets in, happy, has no idea anything is wrong."
+      }
+    },
+    "on_unlisted_action": "Nothing changes for Pedro. He's still stuck."
+  },
+  "expected_ticket": {
+    "category": "Identity & Access > MFA",
+    "final_status": "Solved",
+    "assigned_group": "Service Desk L1"
+  },
+  "rubric": {
+    "diagnosis": [
+      {
+        "check": "Establishes the password works and the failure is at the MFA step",
+        "points": 10
+      },
+      {
+        "check": "Learns the old phone is gone and Authenticator wasn't moved",
+        "points": 10
+      },
+      {
+        "check": "Chooses an MFA fix without resetting the password",
+        "points": 5
+      }
+    ],
+    "verification": [
+      {
+        "check": "Verifies identity with an accepted method before any account action",
+        "points": 15
+      },
+      {
+        "check": "Uses an accepted verification method, not caller ID or name and title alone",
+        "points": 10
+      }
+    ],
+    "communication": [
+      {
+        "check": "Tells Pedro what he'll see at next sign-in and what to do",
+        "points": 10
+      },
+      {
+        "check": "Acknowledges the deadline and gives a realistic time estimate",
+        "points": 5
+      },
+      {
+        "check": "Confirms Pedro can sign in before closing",
+        "points": 10
+      }
+    ],
+    "documentation": [
+      {
+        "check": "Category matches the expected category",
+        "points": 5,
+        "auto": "category"
+      },
+      {
+        "check": "Notes record the verification method used",
+        "points": 5
+      },
+      {
+        "check": "Notes record the cause and the action taken",
+        "points": 10
+      },
+      {
+        "check": "Final status matches the expected status",
+        "points": 5,
+        "auto": "final_status"
+      }
+    ],
+    "critical_failures": [
+      {
+        "when": "A fix action was taken before identity was verified with an accepted method",
+        "effect": {
+          "set_category_score": {
+            "verification": 0
+          }
+        }
+      },
+      {
+        "when": "MFA was turned off for the user",
+        "effect": {
+          "cap_total": 50
+        }
+      }
+    ]
+  },
+  "evidence": {
+    "glpi_ticket_screenshot": "screenshots/glpi-08-ticket-02-mfa-new-phone.png",
+    "entra_screenshots": [
+      "screenshots/18-pedro-mfa-registered.png",
+      "screenshots/19-require-mfa-reregister.png"
+    ]
+  }
+}
