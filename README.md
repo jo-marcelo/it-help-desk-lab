@@ -285,10 +285,6 @@ This lab runs on Entra ID Free, and that shaped a few decisions.
 - No Azure subscription is attached, so the tenant has no billable resources.
 - GLPI only listens on localhost. Its `.env` file and database volume are excluded by `.gitignore` and never committed.
 
-## Next
-
-- An AI help desk simulator where Claude plays the caller, using these eight scenarios, and grades how the ticket was handled
-
 ## Repo layout
 
 ```
@@ -304,7 +300,7 @@ it-help-desk-lab/
 
 Parts 1 and 2 show the admin work and the ticketing. Part 3 practices the part a lab can't: the call itself. Claude plays the user on the phone, I work the ticket, and a second Claude call grades the run against a fixed rubric.
 
-**Try it:** [Help Desk Simulator](ARTIFACT_LINK) (runs on claude.ai, so you need to be signed in)
+**Try it:** [Help Desk Simulator](https://claude.ai/artifact/8TyhYxAFEooHEbvBWxdGZ6) (runs on claude.ai, so you need to be signed in)
 
 ![Scenario picker](screenshots/sim-01-picker.png)
 
