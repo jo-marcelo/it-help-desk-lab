@@ -300,3 +300,61 @@ it-help-desk-lab/
 │   └── .gitignore
 └── screenshots/   Entra 01 to 22, GLPI glpi-01 to glpi-16
 ```
+## Part 3: AI Help Desk Simulator
+
+Parts 1 and 2 show the admin work and the ticketing. Part 3 practices the part a lab can't: the call itself. Claude plays the user on the phone, I work the ticket, and a second Claude call grades the run against a fixed rubric.
+
+**Try it:** [Help Desk Simulator](ARTIFACT_LINK) (runs on claude.ai, so you need to be signed in)
+
+![Scenario picker](screenshots/sim-01-picker.png)
+
+### How a call works
+
+1. **Pick a scenario.** Each one is a real ticket from Part 2, with the same users, groups, and SLAs.
+2. **Talk to the caller.** They open with the symptom, not the cause. Details like "I traded my old phone in" or "Lucas can't connect either" come out only when you ask the right question.
+3. **Work the console.** Look up the account in Entra, call back the mobile on file, message the manager, or apply a fix. The caller notices a change only when they try again.
+4. **Fill the ticket.** Category, status, assigned group, how you verified the caller, and notes. Escalating means reassigning the ticket, as in GLPI. SLA timers mirror the GLPI targets at 10x speed, so a P1 gives you 12 minutes.
+5. **Close it and get graded.** Four categories, 25 points each, with the transcript line behind every deduction.
+
+![Call start: unknown number, P1 timers running](screenshots/sim-02-call-start.png)
+
+![Call resolved: callback verified, ticket notes filled](screenshots/sim-03-call-resolved.png)
+
+### The eight scenarios
+
+| # | Scenario | Caller | Priority | What it tests | Outcome |
+|---|---|---|---|---|---|
+| 1 | Forgot password after vacation | Maria | P3 | Temporary password only over a verified channel | Resolve |
+| 2 | MFA prompt after a new phone | Pedro | P2 | Fixing MFA, not the password | Resolve |
+| 3 | New hire can't open team files | Lucas | P3 | Manager approval before granting access | Resolve |
+| 4 | Reset page refuses her | Ana | P3 | Spotting the Entra ID P1 licensing gap | Resolve |
+| 5 | Exec locked out before a board call | Maria | P1 | Holding the line on verification under pressure | Resolve |
+| 6 | Email "from IT" looks off | Ana | P2 | Checking exposure, then a clean handoff | Security |
+| 7 | VPN times out from home | Pedro | P2 | L1 checks and a complete handoff | Network |
+| 8 | Laptop is slow | Lucas | P4 | Troubleshooting by talking the user through it | Resolve |
+
+![Scorecard for the exec lockout run](screenshots/sim-04-scorecard.png)
+
+### How it's built
+
+Each scenario is one JSON file in [`simulator/scenarios`](simulator/scenarios). It holds the caller's persona, the hidden cause, the facts they reveal and when, how they react to each console action, the expected ticket, and the rubric. The caller prompt and the grader prompt are both generated from that file, so adding a scenario is data, not code.
+
+`build.py` checks every scenario against `config.json` (action IDs, categories, groups, rubric totals of 25) and bakes them into one self-contained `index.html`, which is the page published on claude.ai.
+
+The grader returns points and quoted evidence per check. The page does the math: totals, category overrides, and caps from critical failures, so the model can't miscount. Category, final status, and assigned group are checked by code, since they're plain field comparisons.
+
+### Design decisions
+
+- **Verification only counts when it happens in the console.** Early versions let the caller say "yes, I'm on the number on file," which proves nothing. Now a callback or a manager confirmation has to appear as a console event before any fix, or verification scores zero.
+- **The console holds admin actions only.** An early "walk through VPN checks" button made the caller report results I never asked for. Troubleshooting now happens in the conversation.
+- **Scored against a checklist, not an impression.** Every deduction quotes the transcript or a ticket field, so a score can be argued with.
+
+### What it caught in my own runs
+
+I failed identity verification in four of my first five calls, usually by accepting a name and "I'm calling from my mobile." On the exec lockout I held the line through the pushback and scored 25/25 on verification. My weakest category now is communication: answering the caller's "how long will this take?" while I'm still gathering facts.
+
+### Limitations
+
+- It runs on claude.ai with the viewer's own account, so anyone trying it needs to be signed in. The screenshots and the demo video show a full run.
+- Grading is done by a model, so the same run can vary by a few points. The rubric and the quoted evidence keep it consistent enough to compare runs.
+- Scenarios 6 to 8 are scenario-only, as in Part 2: there is no mail filter, VPN server, or laptop fleet behind them.
